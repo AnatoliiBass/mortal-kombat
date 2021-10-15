@@ -10,11 +10,11 @@ class Player {
       console.log(this.name + ' Fight...')
    }
 }
+const $arenas = document.querySelector('.arenas')
 const player1 = new Player('Scorpion', 100, 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif', ['knife', 'fireball', 'arrow'])
 const player2 = new Player('Sonya', 50, 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif', ['redEye', 'machete', 'fork'])
 
 function createPlayer(className, player) {
-   const $arenas = document.querySelector('.arenas')
    const $collectionDivs = []
    for (let i = 0; i < 5; i++) {
       $collectionDivs[i] = document.createElement('div')
