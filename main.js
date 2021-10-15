@@ -1,6 +1,7 @@
 class Player {
-   constructor(name, hp, img, weapon) {
-      this.name = name,
+   constructor(player, name, hp, img, weapon) {
+      this.player = player,
+         this.name = name,
          this.hp = hp,
          this.img = img,
          this.weapon = weapon
@@ -10,33 +11,74 @@ class Player {
       console.log(this.name + ' Fight...')
    }
 }
+
 const $arenas = document.querySelector('.arenas')
-const player1 = new Player('Scorpion', 100, 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif', ['knife', 'fireball', 'arrow'])
-const player2 = new Player('Sonya', 50, 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif', ['redEye', 'machete', 'fork'])
+const $button = document.querySelector('.button')
 
-function createPlayer(className, player) {
-   const $collectionDivs = []
-   for (let i = 0; i < 5; i++) {
-      $collectionDivs[i] = document.createElement('div')
+const player1 = new Player(1, 'Scorpion', 100, 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif', ['knife', 'fireball', 'arrow'])
+const player2 = new Player(2, 'Sonya', 100, 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif', ['redEye', 'machete', 'fork'])
+
+function createElement(tag, nameClass) {
+   const $tag = document.createElement(tag)
+   if (nameClass) {
+      $tag.classList.add(nameClass)
    }
-   const $img = document.createElement('img')
-   $img.src = player.img
-   $collectionDivs[0].classList.add(className)
-   $collectionDivs[1].classList.add('progressbar')
-   $collectionDivs[2].classList.add('character')
-   $collectionDivs[3].classList.add('life')
-   $collectionDivs[3].style.width = player.hp + '%'
-   $collectionDivs[4].classList.add('name')
-   $collectionDivs[4].innerText = player.name
-   $collectionDivs[4].style.textTransform = 'uppercase'
-   $collectionDivs[0].appendChild($collectionDivs[1])
-   $collectionDivs[0].appendChild($collectionDivs[2])
-   $collectionDivs[1].appendChild($collectionDivs[3])
-   $collectionDivs[1].appendChild($collectionDivs[4])
-   $collectionDivs[2].appendChild($img)
 
-   $arenas.appendChild($collectionDivs[0])
+   return $tag
 }
 
-createPlayer('player1', player1)
-createPlayer('player2', player2)
+function createPlayer(player) {
+
+   const $img = document.createElement('img')
+   $img.src = player.img
+   const $player = createElement('div', 'player' + player.player)
+   const $progressbar = createElement('div', 'progressbar')
+   const $character = createElement('div', 'character')
+   const $life = createElement('div', 'life')
+   $life.style.width = player.hp + '%'
+   const $name = createElement('div', 'name')
+   $name.innerText = player.name
+   $name.style.textTransform = 'uppercase'
+   $player.appendChild($progressbar)
+   $player.appendChild($character)
+   $progressbar.appendChild($life)
+   $progressbar.appendChild($name)
+   $character.appendChild($img)
+
+   return $player
+}
+
+function backRandom(range) {
+   return Math.ceil(Math.random() * range)
+}
+
+function changeHp(player) {
+   const $playerLife = document.querySelector('.player' + player.player + ' .life')
+   player.hp -= backRandom(20)
+   $playerLife.style.width = player.hp + '%'
+
+   if (player.hp < 0 || player.hp === 0) {
+      player.hp = 0
+      $playerLife.style.width = 0
+      $button.disabled = true
+   }
+}
+
+function playerWin(name) {
+   const $winTitle = createElement('div', 'winTitle')
+   $winTitle.innerText = name + ' win!'
+   return $winTitle
+}
+
+$button.addEventListener('click', () => {
+   changeHp(player1)
+   changeHp(player2)
+   if (player2.hp === 0) {
+      $arenas.appendChild(playerWin(player1.name))
+   } else if (player1.hp === 0) {
+      $arenas.appendChild(playerWin(player2.name))
+   }
+})
+
+$arenas.appendChild(createPlayer(player1))
+$arenas.appendChild(createPlayer(player2))
